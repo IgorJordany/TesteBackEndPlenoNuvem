@@ -1,0 +1,17 @@
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/bin/Debug/netcoreapp2.2/xunit.runner.visualstudio.dotnetcore.testadapter.dll
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/bin/Debug/netcoreapp2.2/xunit.runner.reporters.netcoreapp10.dll
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/bin/Debug/netcoreapp2.2/xunit.runner.utility.netcoreapp10.dll
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/bin/Debug/netcoreapp2.2/BitBank.Core.Tests.deps.json
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/bin/Debug/netcoreapp2.2/BitBank.Core.Tests.runtimeconfig.json
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/bin/Debug/netcoreapp2.2/BitBank.Core.Tests.runtimeconfig.dev.json
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/bin/Debug/netcoreapp2.2/BitBank.Core.Tests.dll
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/bin/Debug/netcoreapp2.2/BitBank.Core.Tests.pdb
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/obj/Debug/netcoreapp2.2/BitBank.Core.Tests.csprojAssemblyReference.cache
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/obj/Debug/netcoreapp2.2/BitBank.Core.Tests.csproj.CoreCompileInputs.cache
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/obj/Debug/netcoreapp2.2/BitBank.Core.Tests.AssemblyInfoInputs.cache
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/obj/Debug/netcoreapp2.2/BitBank.Core.Tests.AssemblyInfo.cs
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/obj/Debug/netcoreapp2.2/BitBank.Core.Tests.dll
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/obj/Debug/netcoreapp2.2/BitBank.Core.Tests.pdb
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/bin/Debug/netcoreapp2.2/BitBank.Core.dll
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/bin/Debug/netcoreapp2.2/BitBank.Core.pdb
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/test/BitBank.Core.Tests/obj/Debug/netcoreapp2.2/BitBank.Core.Tests.csproj.CopyComplete

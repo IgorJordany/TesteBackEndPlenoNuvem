@@ -1,0 +1,58 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/src/BitBank.Core/BitBank.Core.csproj": {}
+  },
+  "projects": {
+    "/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/src/BitBank.Core/BitBank.Core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/src/BitBank.Core/BitBank.Core.csproj",
+        "projectName": "BitBank.Core",
+        "projectPath": "/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/src/BitBank.Core/BitBank.Core.csproj",
+        "packagesPath": "/Users/igorjordanyrichticsilva/.nuget/packages/",
+        "outputPath": "/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/src/BitBank.Core/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/Users/igorjordanyrichticsilva/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "dependencies": {
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    }
+  }
+}

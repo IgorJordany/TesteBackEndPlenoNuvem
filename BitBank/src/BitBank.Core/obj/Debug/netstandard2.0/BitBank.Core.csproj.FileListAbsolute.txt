@@ -1,0 +1,9 @@
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/src/BitBank.Core/bin/Debug/netstandard2.0/BitBank.Core.deps.json
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/src/BitBank.Core/bin/Debug/netstandard2.0/BitBank.Core.dll
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/src/BitBank.Core/bin/Debug/netstandard2.0/BitBank.Core.pdb
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/src/BitBank.Core/obj/Debug/netstandard2.0/BitBank.Core.csprojAssemblyReference.cache
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/src/BitBank.Core/obj/Debug/netstandard2.0/BitBank.Core.csproj.CoreCompileInputs.cache
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/src/BitBank.Core/obj/Debug/netstandard2.0/BitBank.Core.AssemblyInfoInputs.cache
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/src/BitBank.Core/obj/Debug/netstandard2.0/BitBank.Core.AssemblyInfo.cs
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/src/BitBank.Core/obj/Debug/netstandard2.0/BitBank.Core.dll
+/Users/igorjordanyrichticsilva/Documents/TesteBackEndPleno/BitBank/src/BitBank.Core/obj/Debug/netstandard2.0/BitBank.Core.pdb
