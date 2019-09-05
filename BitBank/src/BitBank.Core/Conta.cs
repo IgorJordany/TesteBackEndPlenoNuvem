@@ -57,9 +57,13 @@ namespace BitBank.Core
 
             _transacoes.Add(new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, valor, $"Depositante {depositante}"));
         }
-        public void Saque(decimal valor)
+        public void Sacar(decimal valor)
         {
-
+            if (valor <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(valor), valor, "O valor do saque deve ser positivo");
+            }
+            _transacoes.Add(new TransacaoBancaria(DateTime.Now, TipoTransacao.Saque, - valor, $"Saque em terminal"));
         }
     }
 }

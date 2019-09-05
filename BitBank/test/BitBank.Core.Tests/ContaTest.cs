@@ -68,12 +68,26 @@ namespace BitBank.Core.Tests
         public void Saldo_conta_corrente_ou_poupanca_nao_deve_exceder_cheque_especial(TipoConta tipo, decimal valor)
         {
             var transacoesBancaria = new[] { 
-                new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, valor, "Depositado por Igor")
+                new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, valor, "Saldo inicial")
             };
             
             Assert.Throws<Exception>(
                 () => new Conta(transacoesBancaria, tipo)
             );
+        }
+        [Fact]
+        public void Saldo_deve_ser_somatorio_das_transacoes()
+        {
+            var transacoesBancaria = new[] { 
+                new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, 1000, "Saldo inicial")
+            };
+            var conta = new Conta(transacoesBancaria,TipoConta.ContaCorrente);
+
+            conta.Depositar("Karol", 800);
+            conta.Sacar(500);
+            var saldoEsperado = 1300m;
+
+            Assert.Equal(saldoEsperado, conta.Saldo);
         }
 
         [Theory]
@@ -84,7 +98,51 @@ namespace BitBank.Core.Tests
         {
             var contaSaque = new Conta(TipoConta.ContaCorrente);
             Assert.Throws<ArgumentOutOfRangeException>(
-                () => contaSaque.Saque(valorSaque)
+                () => contaSaque.Sacar(valorSaque)
+            );
+        }
+
+        [Fact]
+        public void Sacar_subtrai_saldo()
+        {
+            var transacoesBancaria = new[] { 
+                new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, 1000, "Saque pelo terminal")
+            };
+            var contaSaque = new Conta(transacoesBancaria,TipoConta.ContaCorrente);
+
+            contaSaque.Sacar(100);
+            var saldoEsperado = 900m;
+            Assert.Equal(saldoEsperado, contaSaque.Saldo);
+        }
+
+        [Fact]
+        public void Sacar_registra_transacao_bancaria()
+        {
+            var transacoesBancaria = new[] { 
+                new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, 100, "Saldo inicial")
+            };
+            var contaSaque = new Conta(transacoesBancaria,TipoConta.ContaCorrente);
+
+            contaSaque.Sacar(200);
+            
+            var ultimaTransacao = contaSaque.Transacoes.Last();
+            ultimaTransacao.Tipo.Should().Be(TipoTransacao.Saque);
+            ultimaTransacao.Valor.Should().Be(-200m);
+        }
+
+        [Theory]
+        [InlineData(0.0)]
+        [InlineData(-1.0)]
+        [InlineData(-500.0)]
+        public void Valor_transferencia_deve_ser_positivo(decimal valorTransferencia)
+        {
+            var transacoesBancaria = new[] { 
+                new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, 100, "Saldo inicial")
+            };
+            var contaRementeTransferencia = new Conta(transacoesBancaria, TipoConta.ContaCorrente);
+
+            Assert.Throws<ArgumentOutOfRangeException>(
+                () => contaRementeTransferencia.Transferir(0001, 5678904, valorTransferencia)
             );
         }
     }
