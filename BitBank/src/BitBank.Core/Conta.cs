@@ -14,36 +14,39 @@ namespace BitBank.Core
 
     public class Conta
     {
-        private readonly List<TransacaoBancaria> _transacoes = new List<TransacaoBancaria>();
+        const decimal ValorTarifaSaque = -4.77m;
+        private readonly List<TransacaoBancaria> _transacoes;
+        public decimal LimiteChequeEspecial { get; }
 
-        public Conta(IEnumerable<TransacaoBancaria> transacoes, TipoConta tipo)
+        public Conta(IEnumerable<TransacaoBancaria> transacoes, TipoConta tipo, decimal limiteChequeEspecial = 0)
         {
-            _transacoes = transacoes?.ToList();
+            if (tipo == TipoConta.ContaPoupanca && limiteChequeEspecial != 0)
+            {
+                throw new ArgumentException(nameof(limiteChequeEspecial), "limiteChequeEspecial");
+            }
+
+            _transacoes = transacoes?.ToList() ?? new List<TransacaoBancaria>();
             Tipo = tipo;
-            var saldoInicial = _transacoes.Sum(t => t.Valor);
-            LimiteSaldoExcedido(saldoInicial,tipo);
+            LimiteChequeEspecial = - limiteChequeEspecial;
         }
 
-        public Conta(TipoConta tipo)
+        public Conta(TipoConta tipo, decimal limiteChequeEspecial = 0)
         {
+            if (tipo == TipoConta.ContaPoupanca && limiteChequeEspecial != 0)
+            {
+                throw new ArgumentException(nameof(limiteChequeEspecial), "limiteChequeEspecial");
+            }
+
             _transacoes =  new List<TransacaoBancaria>();
             Tipo = tipo;
+            LimiteChequeEspecial = - limiteChequeEspecial;
         }
 
         public ReadOnlyCollection<TransacaoBancaria> Transacoes => _transacoes.AsReadOnly();
 
         public TipoConta Tipo { get; }
         public decimal Saldo => _transacoes.Sum(t => t.Valor);
-        private void LimiteSaldoExcedido(decimal saldoInicial, TipoConta tipo)
-        {
-            if (tipo == TipoConta.ContaCorrente)
-                if (saldoInicial < -300)
-                    throw new Exception("Saldo conta corrente excedeu o limite");
 
-            if (tipo == TipoConta.ContaPoupanca)
-                if (saldoInicial < 0)
-                    throw new Exception("Saldo conta poupança excedeu o limite");
-        }
         public void Depositar(string depositante, decimal valor)
         {
             if (valor <= 0)
@@ -63,7 +66,20 @@ namespace BitBank.Core
             {
                 throw new ArgumentOutOfRangeException(nameof(valor), valor, "O valor do saque deve ser positivo");
             }
+
+            if (Saldo - valor < LimiteChequeEspecial)
+            {
+                throw new SaldoInsuficienteException(Saldo, valor, LimiteChequeEspecial);
+            }
+
+            var possuiSaqueDentroDoMes = _transacoes.Any(t => t.Tipo == TipoTransacao.Saque && t.Data.Month == DateTime.Now.Month && t.Data.Year == DateTime.Now.Year);
+            
             _transacoes.Add(new TransacaoBancaria(DateTime.Now, TipoTransacao.Saque, - valor, $"Saque em terminal"));
+
+            if (Tipo != TipoConta.ContaPoupanca && possuiSaqueDentroDoMes)
+            {
+                _transacoes.Add(new TransacaoBancaria(DateTime.Now, TipoTransacao.Tarifa, ValorTarifaSaque, $"Tarifa Saque"));
+            }
         }
     }
 }

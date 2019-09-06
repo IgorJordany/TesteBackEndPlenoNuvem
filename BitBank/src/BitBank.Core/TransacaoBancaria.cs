@@ -5,7 +5,8 @@ namespace BitBank.Core
     public enum TipoTransacao
     {
         Deposito,
-        Saque
+        Saque,
+        Tarifa
     }
     
     public class TransacaoBancaria

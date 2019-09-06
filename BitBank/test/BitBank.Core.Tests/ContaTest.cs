@@ -62,32 +62,18 @@ namespace BitBank.Core.Tests
             //Assert.Equal(200m, ultimaTransacao.Valor);
         }
 
-        [Theory]
-        [InlineData(TipoConta.ContaCorrente, -400)]
-        [InlineData(TipoConta.ContaPoupanca, -100)]
-        public void Saldo_conta_corrente_ou_poupanca_nao_deve_exceder_cheque_especial(TipoConta tipo, decimal valor)
-        {
-            var transacoesBancaria = new[] { 
-                new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, valor, "Saldo inicial")
-            };
-            
-            Assert.Throws<Exception>(
-                () => new Conta(transacoesBancaria, tipo)
-            );
-        }
         [Fact]
         public void Saldo_deve_ser_somatorio_das_transacoes()
         {
             var transacoesBancaria = new[] { 
-                new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, 1000, "Saldo inicial")
+                new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, 1000, "Saldo inicial"),
+                new TransacaoBancaria(DateTime.Now, TipoTransacao.Saque, -500, "Saque terminal"),
+                new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, 800, "Deposito de Joao")
             };
             var conta = new Conta(transacoesBancaria,TipoConta.ContaCorrente);
 
-            conta.Depositar("Karol", 800);
-            conta.Sacar(500);
             var saldoEsperado = 1300m;
-
-            Assert.Equal(saldoEsperado, conta.Saldo);
+            conta.Saldo.Should().Be(saldoEsperado);
         }
 
         [Theory]
@@ -103,47 +89,150 @@ namespace BitBank.Core.Tests
         }
 
         [Fact]
-        public void Sacar_subtrai_saldo()
+        public void Sacar_registra_transacao_bancaria_de_saque()
         {
             var transacoesBancaria = new[] { 
-                new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, 1000, "Saque pelo terminal")
+                new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, 500, "Saldo inicial")
             };
             var contaSaque = new Conta(transacoesBancaria,TipoConta.ContaCorrente);
+            var valorSaque = 200;
 
-            contaSaque.Sacar(100);
-            var saldoEsperado = 900m;
-            Assert.Equal(saldoEsperado, contaSaque.Saldo);
+            contaSaque.Sacar(valorSaque);
+            var ultimaTransacao = contaSaque.Transacoes.Last();
+
+            if (ultimaTransacao.Tipo == TipoTransacao.Tarifa)
+            {
+                var antepenultimaTransacao = contaSaque.Transacoes.ElementAt(contaSaque.Transacoes.Count - 2);
+                antepenultimaTransacao.Tipo.Should().Be(TipoTransacao.Saque);
+                antepenultimaTransacao.Valor.Should().Be(-valorSaque);
+            }
+            else
+            {
+                ultimaTransacao.Tipo.Should().Be(TipoTransacao.Saque);
+                ultimaTransacao.Valor.Should().Be(-valorSaque);
+            }
         }
 
         [Fact]
-        public void Sacar_registra_transacao_bancaria()
+        public void Sacar_deve_aplicar_de_tarifa_saque_se_nao_for_primeira_operacao_de_saque_do_mes()
         {
             var transacoesBancaria = new[] { 
-                new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, 100, "Saldo inicial")
+                new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, 1000, "Deposito Joao"),
+                new TransacaoBancaria(DateTime.Now, TipoTransacao.Saque, -100, "Saque terminal")
             };
-            var contaSaque = new Conta(transacoesBancaria,TipoConta.ContaCorrente);
 
-            contaSaque.Sacar(200);
-            
+            var contaSaque = new Conta(transacoesBancaria, TipoConta.ContaCorrente);
+            var valorTarifaSaque = -4.77m;
+            var valorSaque = 123m;
+
+            contaSaque.Sacar(valorSaque);
+
+            var antepenultimaTransacao = contaSaque.Transacoes.ElementAt(contaSaque.Transacoes.Count - 2);
             var ultimaTransacao = contaSaque.Transacoes.Last();
-            ultimaTransacao.Tipo.Should().Be(TipoTransacao.Saque);
-            ultimaTransacao.Valor.Should().Be(-200m);
+
+            antepenultimaTransacao.Tipo.Should().Be(TipoTransacao.Saque);
+            antepenultimaTransacao.Valor.Should().Be(-valorSaque);
+
+            ultimaTransacao.Tipo.Should().Be(TipoTransacao.Tarifa);
+            ultimaTransacao.Valor.Should().Be(valorTarifaSaque);
         }
 
-        [Theory]
-        [InlineData(0.0)]
-        [InlineData(-1.0)]
-        [InlineData(-500.0)]
-        public void Valor_transferencia_deve_ser_positivo(decimal valorTransferencia)
+        [Fact]
+        public void Sacar_nao_deve_aplicar_tarifa_se_for_primeira_operacao_de_saque_do_mes()
         {
             var transacoesBancaria = new[] { 
-                new TransacaoBancaria(DateTime.Now, TipoTransacao.Deposito, 100, "Saldo inicial")
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Deposito, 1000, "Deposito Joao"),
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Saque, -500, "primeiro Saque"),
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Saque, -300, "Saque"),
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Tarifa, -4.77m, "tarifa")
             };
-            var contaRementeTransferencia = new Conta(transacoesBancaria, TipoConta.ContaCorrente);
 
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () => contaRementeTransferencia.Transferir(0001, 5678904, valorTransferencia)
-            );
+            var contaSaque = new Conta(transacoesBancaria, TipoConta.ContaCorrente);
+            var valorSaque = 123m;
+
+            contaSaque.Sacar(valorSaque);
+
+            var ultimaTransacao = contaSaque.Transacoes.Last();
+            ultimaTransacao.Tipo.Should().Be(TipoTransacao.Saque);
+            ultimaTransacao.Valor.Should().Be(-valorSaque);
+        }
+
+        [Fact]
+        public void Sacar_nao_debita_tarifa_em_conta_poupanca()
+        {
+            var transacoesBancaria = new[] { 
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Deposito, 10000, "Deposito Joao"),
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Saque, -500, "primeiro Saque"),
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Saque, -300, "Saque"),
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Tarifa, -4.77m, "tarifa"),
+                new TransacaoBancaria(DateTime.Now, TipoTransacao.Saque, -300, "Saque"),
+                new TransacaoBancaria(DateTime.Now, TipoTransacao.Tarifa, -4.77m, "tarifa")
+            };
+
+            var contaSaque = new Conta(transacoesBancaria, TipoConta.ContaPoupanca);
+            var valorSaque = 123m;
+
+            contaSaque.Sacar(valorSaque);
+
+            var ultimaTransacao = contaSaque.Transacoes.Last();
+            ultimaTransacao.Tipo.Should().Be(TipoTransacao.Saque);
+            ultimaTransacao.Valor.Should().Be(-valorSaque);
+        }
+
+        [Fact]
+        public void Conta_corrente_deve_sacar_do_cheque_especial()
+        {
+            var transacoesBancaria = new[] { 
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Deposito, 1000, "Deposito Joao"),
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Saque, -800, "primeiro Saque"),
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Saque, -200, "Saque"),
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Tarifa, -4.77m, "tarifa")
+            };
+
+            var limiteChequeEspecial = 300m;
+            var contaSaque = new Conta(transacoesBancaria, TipoConta.ContaCorrente, limiteChequeEspecial);
+            var valorSaque = 200m;
+
+            contaSaque.Sacar(valorSaque);
+
+            contaSaque.Saldo.Should().Be(-204.77m);
+        }
+
+        [Fact]
+        public void Conta_corrente_nao_deve_sacar_mais_do_que_limite_cheque_especial()
+        {
+            var transacoesBancaria = new[] { 
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Deposito, 1000, "Deposito Joao"),
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Saque, -800, "primeiro Saque"),
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Saque, -200, "Saque"),
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Tarifa, -4.77m, "tarifa")
+            };
+
+            var limiteChequeEspecial = 300m;
+            var contaSaque = new Conta(transacoesBancaria, TipoConta.ContaCorrente, limiteChequeEspecial);
+            var valorSaque = 295.24m;
+
+            Action action = () => contaSaque.Sacar(valorSaque);
+
+            action.Should().ThrowExactly<SaldoInsuficienteException>();
+        }
+
+        [Fact]
+        public void Conta_poupanca_nao_deve_possui_cheque_especial()
+        {
+            var transacoesBancaria = new[] { 
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Deposito, 1000, "Deposito Joao"),
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Saque, -800, "primeiro Saque"),
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Saque, -200, "Saque"),
+                new TransacaoBancaria(DateTime.Now.AddMonths(-1), TipoTransacao.Tarifa, -4.77m, "tarifa")
+            };
+
+            var limiteChequeEspecial = 300m;
+
+            Action action = () => new Conta(transacoesBancaria, TipoConta.ContaPoupanca, limiteChequeEspecial);
+
+            action.Should().ThrowExactly<ArgumentException>()   
+                .And.ParamName.Should().Be("limiteChequeEspecial");
         }
     }
 }
